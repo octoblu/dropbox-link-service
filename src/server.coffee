@@ -4,14 +4,13 @@ express            = require 'express'
 bodyParser         = require 'body-parser'
 errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
-bearerToken        = require 'express-bearer-token'
 MeshbluConfig      = require 'meshblu-config'
 debug              = require('debug')('dropbox-link-service:server')
 Router             = require './router'
 DropboxLinkService = require './services/dropbox-link-service'
 
 class Server
-  constructor: ({@disableLogging, @port}, {@meshbluConfig})->
+  constructor: ({@disableLogging, @port}, {@meshbluConfig,@dropboxServiceUri})->
     @meshbluConfig ?= new MeshbluConfig().toJSON()
 
   address: =>
@@ -23,14 +22,14 @@ class Server
     app.use cors()
     app.use errorHandler()
     app.use meshbluHealthcheck()
-    app.use bearerToken()
     app.use bodyParser.urlencoded limit: '1mb', extended : true
     app.use bodyParser.json limit : '1mb'
 
     app.options '*', cors()
 
-    dropboxLinkService = new DropboxLinkService {@meshbluConfig}
-    router = new Router {dropboxLinkService}
+    dropboxLinkService = new DropboxLinkService {@meshbluConfig,@dropboxServiceUri}
+
+    router = new Router {dropboxLinkService,@meshbluConfig}
 
     router.route app
 

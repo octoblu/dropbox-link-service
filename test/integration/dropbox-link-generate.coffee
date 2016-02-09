@@ -1,13 +1,19 @@
-http    = require 'http'
-request = require 'request'
-textCrypt = require '../../src/utils/text-crypt'
-shmock  = require '@octoblu/shmock'
-Server  = require '../../src/server'
+http        = require 'http'
+request     = require 'request'
+MeshbluHttp = require 'meshblu-http'
+shmock      = require '@octoblu/shmock'
+Server      = require '../../src/server'
 
 describe 'Generate', ->
+  before ->
+    @timeout 10000
+    meshbluHttp = new MeshbluHttp({})
+    {@privateKey, publicKey} = meshbluHttp.generateKeyPair()
+
+    @privateKeyObj = meshbluHttp.setPrivateKey @privateKey
+
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
-    @dropbox = shmock 0xbabe
 
     serverOptions =
       port: undefined,
@@ -16,6 +22,7 @@ describe 'Generate', ->
     meshbluConfig =
       server: 'localhost'
       port: 0xd00d
+      privateKey: @privateKey
 
     @server = new Server serverOptions, {meshbluConfig}
 
@@ -29,23 +36,16 @@ describe 'Generate', ->
   afterEach (done) ->
     @meshblu.close done
 
-  afterEach (done) ->
-    @dropbox.close done
-
-  describe 'On POST /links', ->
+  describe 'On POST /dropbox/links', ->
     beforeEach (done) ->
       @registerDevice = @meshblu
         .post '/devices'
-        .send
-          dropbox:
-            encryptedToken: textCrypt.encrypt 'oh-this-is-my-bearer-token'
-            encryptedPath: textCrypt.encrypt 'path-to-file'
         .reply 201,
           uuid: 'one-time-device-uuid'
           token: 'one-time-device-token'
 
       options =
-        uri: '/links'
+        uri: '/dropbox/links'
         baseUrl: "http://localhost:#{@serverPort}"
         auth:
           bearer: 'oh-this-is-my-bearer-token'
@@ -62,4 +62,4 @@ describe 'Generate', ->
       expect(@response.statusCode).to.equal 201
 
     it 'should respond with the link', ->
-      expect(@body.link).to.equal 'https://one-time-device-uuid:one-time-device-token@dropbox-link.octoblu.com/links'
+      expect(@body.link).to.equal 'https://one-time-device-uuid:one-time-device-token@dropbox-link.octoblu.com/meshblu/links'

@@ -8,6 +8,8 @@ class Command
       port:           process.env.PORT || 80
       disableLogging: process.env.DISABLE_LOGGING == "true"
 
+    @dropboxServiceUri = process.env.DROPBOX_SERVICE_URI || 'https://api.dropbox.com/'
+
   panic: (error) =>
     console.error error.stack
     process.exit 1
@@ -16,7 +18,7 @@ class Command
     # Use this to require env
     # @panic new Error('Missing required environment variable: ENV_NAME') if _.isEmpty @serverOptions.envName
 
-    server = new Server @serverOptions, {meshbluConfig:  new MeshbluConfig().toJSON()}
+    server = new Server @serverOptions, {meshbluConfig:  new MeshbluConfig().toJSON(),@dropboxServiceUri}
     server.run (error) =>
       return @panic error if error?
 

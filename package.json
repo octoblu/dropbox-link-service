@@ -1,6 +1,6 @@
 {
   "name": "dropbox-link-service",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Put some description here",
   "keywords": [],
   "homepage": "https://github.com/octoblu/dropbox-link",
@@ -26,7 +26,6 @@
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "mocha-istanbul": "^0.2.0",
-    "request": "^2.66.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
@@ -43,7 +42,8 @@
     "lodash": "^3.10.1",
     "meshblu-config": "^3.1.1",
     "meshblu-http": "^5.0.2",
-    "morgan": "^1.6.1"
+    "morgan": "^1.6.1",
+    "request": "^2.66.0"
   },
   "peerDependencies": {},
   "engines": {
