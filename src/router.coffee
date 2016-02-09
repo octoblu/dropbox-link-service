@@ -5,7 +5,7 @@ class Router
   route: (app) =>
     dropboxLinkController = new DropboxLinkController {@dropboxLinkService}
 
-    app.get '/hello', dropboxLinkController.hello
+    app.post '/links', dropboxLinkController.generate
     # e.g. app.put '/resource/:id', someController.update
 
 module.exports = Router
