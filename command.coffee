@@ -9,6 +9,7 @@ class Command
       disableLogging: process.env.DISABLE_LOGGING == "true"
 
     @dropboxServiceUri = process.env.DROPBOX_SERVICE_URI || 'https://api.dropbox.com/'
+    @privateKeyBase64 = process.env.MESHBLU_PRIVATE_KEY_BASE64
 
   panic: (error) =>
     console.error error.stack
@@ -16,9 +17,11 @@ class Command
 
   run: =>
     # Use this to require env
-    # @panic new Error('Missing required environment variable: ENV_NAME') if _.isEmpty @serverOptions.envName
+    @panic new Error('Missing required environment variable: MESHBLU_PRIVATE_KEY_BASE64') if _.isEmpty @privateKeyBase64
 
-    server = new Server @serverOptions, {meshbluConfig:  new MeshbluConfig().toJSON(),@dropboxServiceUri}
+    meshbluConfig = new MeshbluConfig().toJSON()
+    meshbluConfig.privateKey = new Buffer(@privateKeyBase64, 'base64').toString('utf8')
+    server = new Server @serverOptions, {meshbluConfig, @dropboxServiceUri}
     server.run (error) =>
       return @panic error if error?
 
