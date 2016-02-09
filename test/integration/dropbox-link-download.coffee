@@ -6,7 +6,7 @@ Server      = require '../../src/server'
 
 describe 'Download', ->
   before ->
-    @timeout 10000
+    @timeout 20000
     meshbluHttp = new MeshbluHttp({})
     {@privateKey, publicKey} = meshbluHttp.generateKeyPair()
 
