@@ -62,6 +62,11 @@ describe 'Download', ->
         .get "/download-link"
         .reply 200, '{"some-data":true}'
 
+      @deleteTheDevice = @meshblu
+        .delete '/devices/one-time-device-uuid'
+        .set 'Authorization', "Basic #{deviceAuth}"
+        .reply 200
+
       options =
         uri: '/meshblu/links'
         baseUrl: "http://localhost:#{@serverPort}"
@@ -80,6 +85,9 @@ describe 'Download', ->
 
     it 'should dowload the link', ->
       @downloadLink.done()
+
+    it 'should delete the device when done', ->
+      @deleteTheDevice.done()
 
     it 'should return a 200', ->
       expect(@response.statusCode).to.equal 200

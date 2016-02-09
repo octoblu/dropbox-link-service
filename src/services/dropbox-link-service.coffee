@@ -14,7 +14,8 @@ class DropboxLinkService
       link = "https://#{device.uuid}:#{device.token}@dropbox-link.octoblu.com/meshblu/links"
       callback null, {link}
 
-  download: ({device}, callback) =>
+  download: ({meshbluAuth}, callback) =>
+    {device} = meshbluAuth
     {encryptedToken,encryptedPath} = device.dropbox
     return callback @_createError 422, 'Invalid Device' unless encryptedPath?
     return callback @_createError 422, 'Invalid Device' unless encryptedToken?
@@ -33,8 +34,10 @@ class DropboxLinkService
     request.post options, (error, response, body) =>
       return callback @_createError 500, error.message if error?
       return callback @_createError response.statusCode, body if response.statusCode > 299
-      callback null, request.get body.url
-
+      meshbluHttp = new MeshbluHttp meshbluAuth
+      meshbluHttp.unregister uuid: meshbluAuth.uuid, (error) =>
+        return callback @_createError 500, error.message if error?
+        callback null, request.get body.url
 
   _createError: (code, message) =>
     error = new Error message

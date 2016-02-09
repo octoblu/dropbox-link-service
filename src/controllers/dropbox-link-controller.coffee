@@ -12,8 +12,8 @@ class DropboxLinkController
       response.status(201).send body
 
   download: (request, response) =>
-    {device} = request.meshbluAuth
-    @dropboxLinkService.download {device}, (error, requestStream) =>
+    {meshbluAuth} = request
+    @dropboxLinkService.download {meshbluAuth}, (error, requestStream) =>
       return response.status(error.code || 500).send(error: error.message) if error?
       requestStream.pipe response
 
