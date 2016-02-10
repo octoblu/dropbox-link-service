@@ -51,6 +51,7 @@ describe 'Generate', ->
           bearer: 'oh-this-is-my-bearer-token'
         json:
           path: 'path-to-file'
+          fileName: 'File Name.pdf'
 
       request.post options, (error, @response, @body) =>
         done error
@@ -63,3 +64,4 @@ describe 'Generate', ->
 
     it 'should respond with the link', ->
       expect(@body.link).to.equal 'https://one-time-device-uuid:one-time-device-token@dropbox-link.octoblu.com/meshblu/links'
+      expect(@body.fileName).to.equal 'File Name.pdf'

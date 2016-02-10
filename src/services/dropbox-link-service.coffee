@@ -4,7 +4,7 @@ request     = require 'request'
 class DropboxLinkService
   constructor: ({@meshbluConfig,@dropboxServiceUri}) ->
 
-  generate: ({token,path}, callback) =>
+  generate: ({token,path,fileName}, callback) =>
     meshbluHttp = new MeshbluHttp @meshbluConfig
     privateKey = meshbluHttp.setPrivateKey @meshbluConfig.privateKey
     encryptedToken = privateKey.encrypt token, 'base64'
@@ -12,7 +12,7 @@ class DropboxLinkService
     meshbluHttp.register dropbox: {encryptedToken,encryptedPath}, (error, device) =>
       return callback @_createError 500, error.message if error?
       link = "https://#{device.uuid}:#{device.token}@dropbox-link.octoblu.com/meshblu/links"
-      callback null, {link}
+      callback null, {link,fileName}
 
   download: ({meshbluAuth}, callback) =>
     {device} = meshbluAuth
