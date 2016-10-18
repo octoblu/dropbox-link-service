@@ -1,11 +1,9 @@
-cors               = require 'cors'
-morgan             = require 'morgan'
-express            = require 'express'
-bodyParser         = require 'body-parser'
-errorHandler       = require 'errorhandler'
+expressOctoblu     = require 'express-octoblu'
+enableDestroy      = require 'server-destroy'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 MeshbluConfig      = require 'meshblu-config'
 debug              = require('debug')('dropbox-link-service:server')
+
 Router             = require './router'
 DropboxLinkService = require './services/dropbox-link-service'
 
@@ -17,15 +15,7 @@ class Server
     @server.address()
 
   run: (callback) =>
-    app = express()
-    app.use meshbluHealthcheck()
-    app.use morgan 'dev', immediate: false unless @disableLogging
-    app.use cors()
-    app.use errorHandler()
-    app.use bodyParser.urlencoded limit: '1mb', extended : true
-    app.use bodyParser.json limit : '1mb'
-
-    app.options '*', cors()
+    app = expressOctoblu()
 
     dropboxLinkService = new DropboxLinkService {@meshbluConfig,@dropboxServiceUri}
 
@@ -34,8 +24,12 @@ class Server
     router.route app
 
     @server = app.listen @port, callback
+    enableDestroy @server
 
   stop: (callback) =>
     @server.close callback
+
+  destroy: =>
+    @server.destroy()
 
 module.exports = Server
